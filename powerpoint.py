@@ -40,7 +40,6 @@ def openSong(song):
     credits_stuff = []
     with open(song) as f:
         lines = f.readlines()
-
     if len(lines) != 0:
         count = 0
         if lines[0].startswith("Intro"):

@@ -1,4 +1,3 @@
-import powerpoint
 import time
 import requests
 from bs4 import BeautifulSoup
@@ -120,7 +119,7 @@ def save(name, data):
                 emptyCount = 0
                 final_data.append(data[i])
     with open(OUTPUT_PATH + name + FILE_EXTENSION, "wb") as f:
-        f.write(("\n".join(final_data)).strip().replace(u"\u2018", "'").replace(u"\u2019", "'").replace("0xe2", "?").encode('utf-8'))
+        f.write("\n"+("\n".join(final_data)).strip().replace(u"\u2018", "'").replace(u"\u2019", "'").replace("0xe2", "?").encode('utf-8'))
 
 
 def logErrors(name, type_song="default"):
@@ -165,7 +164,7 @@ def createDirs(name):
         os.makedirs(OUTPUT_PATH + name)
 
 
-def getSongsFromFile(type_of_song):
+def runDir(type_of_song):
     createDirs(type_of_song)
     createDirs("default")
     found = 0
@@ -184,9 +183,7 @@ def main():
     # []
     for file in ["worshipNight_1", "worshipNight_2", "hymns", "notWellKnown", "modernWorship"]:
     # for file in ["temp"]:
-        getSongsFromFile(file)
-        powerpoint.runDir(file)
-    # save("test", getSong("10-000-reasons-bless-the-lord"))
+        runDir(file)
 
 
 
