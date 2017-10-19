@@ -6,6 +6,9 @@ from pptx.util import Inches, Pt
 FILE_EXTENTSION = ".txt"
 FONT_SIZE = Pt(25)
 
+def error(type_of_error, song_path):
+    # TODO: sort out logging
+    print("[error {0}] in {1}".format(type_of_error, song_path))
 
 def loadSongs(directory):
     files = []
@@ -25,6 +28,13 @@ def loadSongs(directory):
 
 
 def openSong(song):
+    """
+    loop through all the versus and chorus etc. by seperating the blocks with new line chars
+    then at the end of the file having two lines for the Author: and CCLI: number.
+
+    :param song: path to song file txt format ideally
+    :return:
+    """
     lines = []
     song_list = []
     credits_stuff = []
@@ -52,12 +62,16 @@ def openSong(song):
 
             count += 1
 
-            if lines[len(lines)-2].startswith("Author"):
-                credits_stuff.append(lines[len(lines)-2].split(":")[-1])
-            if lines[len(lines)-1].startswith("CCLI"):
-                credits_stuff.append(lines[len(lines)-1].split(":")[-1])
+        if lines[len(lines)-2].startswith("Author"):
+            credits_stuff.append(lines[len(lines)-2].split(":")[-1])
+        else:
+            error("no author found", song)
+        if lines[len(lines)-1].startswith("CCLI"):
+            credits_stuff.append(lines[len(lines)-1].split(":")[-1])
+        else:
+            error("no CCLI found", song)
     else:
-        print("error: " + song)
+        error("no data in file", song)
 
     return song, song_list, credits_stuff
 
@@ -87,14 +101,15 @@ def runDir(directory):
     songs = loadSongs(directory)
     for song in songs:
         title, lines, details = openSong(song)
-        createPowerpoint(title, lines, details)
+        if len(lines) > 0 and len(details) == 2:
+            createPowerpoint(title, lines, details)
 
 
 def main():
     import time
     s = time.time()
-
-    for file in ["hymns", "notWellKnown", "modernWorship"]:
+    #,"hymns", "notWellKnown", "modernWorship", "fdsfdfs"
+    for file in ["worshipNight_1", "worshipNight_2"]:
         runDir(file)
 
     print("finished: " + str((time.time() - s)))

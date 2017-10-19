@@ -1,3 +1,4 @@
+import powerpoint
 import time
 import requests
 from bs4 import BeautifulSoup
@@ -105,8 +106,21 @@ def getSong(name):
     return data
 
 def save(name, data):
+    emptyCount = 0
+    final_data = []
+    for i in range(len(data)):
+        data[i] = data[i].strip()
+        if not (i == 0 and data[0] != "" and data[1] == "") and not (
+                    data[i - 1].replace(" ", "") == "" and data[i] != "" and data[i + 1].replace(" ", "") == ""):
+            if data[i] == "":
+                if emptyCount == 0:
+                    final_data.append(data[i])
+                emptyCount += 1
+            else:
+                emptyCount = 0
+                final_data.append(data[i])
     with open(OUTPUT_PATH + name + FILE_EXTENSION, "wb") as f:
-        f.write(("\n".join(data)).encode('utf-8').strip().replace(u"\u2018", "'").replace(u"\u2019", "'"))
+        f.write(("\n".join(final_data)).strip().replace(u"\u2018", "'").replace(u"\u2019", "'").replace("0xe2", "?").encode('utf-8'))
 
 
 def logErrors(name, type_song="default"):
@@ -129,6 +143,7 @@ def processSong(name, type_song="default"):
 
     except Exception as e:
         error(e, "")
+        print(e)
         success = False
     print(output)
     return success
@@ -138,7 +153,12 @@ def loadInSongs(name):
     songs = []
     with open(name) as f:
         songs = f.readlines()
-    return [song.split("-")[0].replace("  ", "").replace("\t", "").replace(" ", "-").replace(",", "-").replace("\n", "") for song in songs]
+    return [song.split("-")[0]
+                .replace("  ", "")
+                .replace("\t", "")
+                .replace(" ", "-")
+                .replace(",", "-")
+                .replace("\n", "") for song in songs]
 
 def createDirs(name):
     if not os.path.exists(OUTPUT_PATH + name):
@@ -155,13 +175,17 @@ def getSongsFromFile(type_of_song):
             found += 1
     print("found: {0} / {1}".format(found, len(songs)))
 
+
 def main():
     logging.basicConfig(filename='example.log', level=logging.DEBUG)
     s = time.time()
     # name = "Forever-Reign"
     # name = "asdf"
-    for file in ["hymns", "notWellKnown", "modernWorship"]:
+    # []
+    for file in ["worshipNight_1", "worshipNight_2", "hymns", "notWellKnown", "modernWorship"]:
+    # for file in ["temp"]:
         getSongsFromFile(file)
+        powerpoint.runDir(file)
     # save("test", getSong("10-000-reasons-bless-the-lord"))
 
 
